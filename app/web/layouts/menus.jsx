@@ -1,48 +1,54 @@
-import { Menu } from 'antd'
+import { Breadcrumb } from 'antd'
 import NavLink from 'umi/navlink'
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 import menuConfig from './menuConfig'
 
-const { SubMenu } = Menu
-
-const getChildren = menus => {
-  return menus.map(item => {
-    const { children, path, key, title } = item
-    let icon = item.icon || null
-    if (icon) {
-      icon = React.createElement(icon)
-    }
-    if (Array.isArray(children)) {
-      return React.createElement(SubMenu, {
-        key: key || path || title,
-        icon,
-        children: getChildren(children),
-        title,
-      })
-    }
-
-    return React.createElement(Menu.Item, {
-      children: React.createElement(NavLink, {
-        to: path,
-        children: [title],
-      }),
-      key: key || path || title,
-      title,
-      icon,
+const getBreadcrumbName = key => {
+  const target =
+    menuConfig.find(item => new RegExp(`^${item.path}`, 'i').test(key)) || {}
+  const names = []
+  const getNames = menuObj => {
+    Object.keys(menuObj).forEach(() => {
+      names.push(menuObj.title)
+      if (Array.isArray(menuObj.children)) {
+        menuObj.children.forEach(child => getNames(child))
+      }
     })
-  })
+  }
+  getNames(target)
+  return names
 }
 
-const AppMenus = () => {
-  const { pathname } = useLocation()
-  return React.createElement(Menu, {
-    children: getChildren(menuConfig),
-    mode: 'inline',
-    theme: 'dark',
-    defaultSelectedKeys: [pathname],
-    defaultOpenKeys: [pathname],
-  })
+const AppBreadcrumb = () => {
+  const location = useLocation()
+  const segments = location.pathname.split('/').filter(Boolean)
+  const names = getBreadcrumbName(segments[0])
+
+  const paths = []
+  let current = '/'
+  let i = 0
+  for (; i < segments.length - 1; ++i) {
+    current += segments[i]
+    paths.push({
+      path: current,
+      name: names[i],
+    })
+  }
+
+  current += segments[i]
+
+  return (
+    <Breadcrumb>
+      {paths.map(info => {
+        return (
+          <Breadcrumb.Item key={info.path}>
+            <NavLink to={info.path}>{info.name}</NavLink>
+          </Breadcrumb.Item>
+        )
+      })}
+      <Breadcrumb.Item key={current}>{names[names.length - 1]}</Breadcrumb.Item>
+    </Breadcrumb>
+  )
 }
 
-export default AppMenus
+export default AppBreadcrumb

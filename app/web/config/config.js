@@ -1,8 +1,8 @@
-import path from 'path'
-import AntdDayjsWebpackPlugin from 'antd-dayjs-webpack-plugin'
+import path from 'path';
+import AntdDayjsWebpackPlugin from 'antd-dayjs-webpack-plugin';
 // import routes from './routes'
 
-const webRoot = path.resolve(__dirname, '..')
+const webRoot = path.resolve(__dirname, '..');
 
 export default {
   plugins: [
@@ -15,6 +15,9 @@ export default {
         },
         dva: {
           immer: true,
+        },
+        title: {
+          defaultTitle: 'hello world',
         },
       },
     ],
@@ -29,7 +32,9 @@ export default {
     js: path.join(webRoot, 'assets/js'),
   },
   chainWebpack(config) {
-    config.plugin('AntdDayjsWebpackPlugin').use(AntdDayjsWebpackPlugin)
+    config.plugin('AntdDayjsWebpackPlugin').use(AntdDayjsWebpackPlugin);
+    // config.plugin('Dotenv').use(Dotenv, {
+    //   path: path.resolve(__dirname, '../../../.env'),
+    // })
   },
-  // ...routes,
-}
+};
