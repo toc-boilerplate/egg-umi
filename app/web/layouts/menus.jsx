@@ -1,54 +1,53 @@
-import { Breadcrumb } from 'antd'
-import NavLink from 'umi/navlink'
-import { useLocation } from 'react-router-dom'
-import menuConfig from './menuConfig'
+import { Menu } from 'antd';
+import NavLink from 'umi/navlink';
+import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import menuConfig from './menuConfig';
 
-const getBreadcrumbName = key => {
-  const target =
-    menuConfig.find(item => new RegExp(`^${item.path}`, 'i').test(key)) || {}
-  const names = []
-  const getNames = menuObj => {
-    Object.keys(menuObj).forEach(() => {
-      names.push(menuObj.title)
-      if (Array.isArray(menuObj.children)) {
-        menuObj.children.forEach(child => getNames(child))
-      }
-    })
-  }
-  getNames(target)
-  return names
-}
+const { SubMenu } = Menu;
 
-const AppBreadcrumb = () => {
-  const location = useLocation()
-  const segments = location.pathname.split('/').filter(Boolean)
-  const names = getBreadcrumbName(segments[0])
+const getChildren = (menus, { history, location }) => {
+  return menus.map((item) => {
+    const { children, path, key, title } = item;
+    let icon = item.icon || null;
+    if (icon) {
+      icon = React.createElement(icon);
+    }
+    if (Array.isArray(children)) {
+      return React.createElement(SubMenu, {
+        key: key || path || title,
+        icon,
+        children: getChildren(children, { history, location }),
+        title,
+        // onTitleClick({ key }) {
+        //   history.push(key);
+        // },
+      });
+    }
 
-  const paths = []
-  let current = '/'
-  let i = 0
-  for (; i < segments.length - 1; ++i) {
-    current += segments[i]
-    paths.push({
-      path: current,
-      name: names[i],
-    })
-  }
+    return React.createElement(Menu.Item, {
+      children: React.createElement(NavLink, {
+        to: path,
+        children: [title],
+      }),
+      key: key || path || title,
+      title,
+      icon,
+      className: location.pathname.startsWith(path)
+        ? 'ant-menu-item-selected'
+        : '',
+    });
+  });
+};
 
-  current += segments[i]
+const AppMenus = () => {
+  const history = useHistory();
+  const location = useLocation();
+  return React.createElement(Menu, {
+    children: getChildren(menuConfig, { history, location }),
+    mode: 'inline',
+    theme: 'dark',
+  });
+};
 
-  return (
-    <Breadcrumb>
-      {paths.map(info => {
-        return (
-          <Breadcrumb.Item key={info.path}>
-            <NavLink to={info.path}>{info.name}</NavLink>
-          </Breadcrumb.Item>
-        )
-      })}
-      <Breadcrumb.Item key={current}>{names[names.length - 1]}</Breadcrumb.Item>
-    </Breadcrumb>
-  )
-}
-
-export default AppBreadcrumb
+export default AppMenus;
