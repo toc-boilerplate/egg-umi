@@ -1,0 +1,222 @@
+html,
+body {
+  background-color: #f4f5f9 !important;
+}
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+#root .ant-input {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  resize: none;
+}
+
+.ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  color: #5883f7;
+  background-color: #29354d !important;
+  .link-active {
+    color: #5883f7;
+  }
+}
+
+.ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal)
+  > .ant-menu-item-selected
+  .link-active {
+  color: #fff;
+}
+.ant-btn-primary {
+  width: 130px;
+  height: 40px;
+  background: linear-gradient(180deg, #5d89f8 0%, #2f51ee 100%);
+  border-radius: 4px;
+}
+
+.ant-layout-sider {
+  width: 260px;
+  padding: 40px 13px;
+  background-color: #2e3c56 !important;
+}
+
+.ant-menu.ant-menu-dark,
+.ant-menu-dark .ant-menu-sub,
+.ant-menu.ant-menu-dark .ant-menu-sub {
+  background-color: #2e3c56 !important;
+  font-size: 16px;
+}
+
+.ant-menu-dark.ant-menu-inline > .ant-menu-item-selected,
+.ant-menu-submenu-open.ant-menu-submenu-selected .ant-menu-submenu-title {
+  background: linear-gradient(180deg, #5d89f8 0%, #2f51ee 100%);
+  border-radius: 31px;
+  color: #fff;
+}
+
+.ant-menu-submenu-open.ant-menu-submenu-selected .ant-menu-item::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: transparent;
+}
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected::before {
+  background: #5883f7;
+}
+
+.layout-account {
+  position: relative;
+  height: 100%;
+  background: url('../assets/bg.png') no-repeat center center;
+  background-size: cover;
+  overflow: auto;
+  .header-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 30px 50px;
+  }
+}
+.ant-layout .ant-layout-header,
+.app-header .ant-layout-header {
+  height: 80px;
+}
+.layout-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  color: #828c9f;
+  padding: 0 30px;
+  box-shadow: 0px 5px 4px 0px rgba(0, 0, 0, 0.03);
+  background-color: #fff;
+
+  .left {
+    font-size: 22px;
+    padding-left: 129px;
+  }
+  .right {
+    font-size: 16px;
+  }
+}
+.main-with-side {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.layout-content-block {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.layout-header-action {
+  width: 1000px;
+  height: 100%;
+  margin: 0 auto;
+  text-align: center;
+
+  .back {
+    float: left;
+    width: 25px;
+    height: 100%;
+    background: url('../assets/back.svg') no-repeat center;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .action-link {
+    display: inline-block;
+    width: 80px;
+    height: 100%;
+    line-height: 80px;
+    font-size: 16px;
+    color: #828c9f;
+  }
+  .action-link-active {
+    color: #3153ef;
+    font-size: 20px;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(180deg, #5d89f8 0%, #2f51ee 100%);
+    }
+  }
+  .action-link + .action-link {
+    margin-left: 80px;
+  }
+}
+
+.app-framework {
+  background: #f4f5f9;
+  height: 100%;
+}
+
+.logo-link {
+  display: inline-block;
+  height: 100%;
+  width: 110px;
+  background: url('../assets/logo.png') no-repeat;
+  background-position: left center;
+  margin-left: 50px;
+}
+
+.layout-authing {
+  background-color: #f4f5f9;
+}
+.layout-authing .layout-content {
+  padding: 50px 30px 100px;
+}
+
+.authinfo-form-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 45px;
+}
+.breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 44px 30px 18px;
+}
+.current-position {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.big-input {
+  position: relative;
+  border: 0;
+  padding: 12px 0;
+  .ant-input {
+    font-size: 22px;
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
+    width: 91%;
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  .count {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #eff0f2;
+  }
+}

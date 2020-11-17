@@ -1,108 +1,178 @@
 import React, { useState, useEffect } from 'react'
-import { Layout, Menu, Button, ConfigProvider, Dropdown } from 'antd'
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  CustomerServiceOutlined,
-} from '@ant-design/icons'
+import { Layout, ConfigProvider } from 'antd'
 import 'dayjs/locale/zh-cn'
 import zhCN from 'antd/es/locale/zh_CN'
-import classNames from 'classnames/bind'
-import 'antd/dist/antd.less'
 import { connect } from 'dva'
+import { useLocation, NavLink } from 'react-router-dom'
 import AppMenus from './menus'
 import AppBreadcrumb from './breadcrumb'
-import Login from './login'
-import styles from './index.module.less'
+import AppHeader from './header'
+import AppUserinfoDropdown from './userinfoDropdown'
+import 'antd/dist/antd.less'
+import './layouts.less'
+import classNames from 'classnames/bind'
+import logoWhite from 'assets/logo-white.svg'
+import blurBg from 'assets/gaussian-blur-bg.png'
+import bg from 'assets/bg.png'
+import { getLocalInfo } from 'assets/js/utils'
 
-const cx = classNames.bind(styles)
+const cx = classNames.bind()
 
-const { Header, Sider, Content } = Layout
+const { Sider, Content } = Layout
+
 const AppLayout = props => {
-  const [collapsed, setCollapsed] = useState(false)
+  const location = useLocation()
+  const [collapsed] = useState(false)
+  const backRef = JSON.parse(sessionStorage.getItem('eastweb-route') || '[]')
 
   useEffect(() => {
-    if (props.token) {
+    const unlisten = props.history.listen(({ pathname }) => {
+      if (!backRef[1] || !backRef[1].startsWith('/media')) {
+        backRef[0] = backRef[1]
+        backRef[1] = pathname
+        sessionStorage.setItem('eastweb-route', JSON.stringify(backRef))
+      }
+    })
+    return () => {
+      unlisten()
+    }
+  }, [])
+
+  const token =
+    props.loginfo?.access_token || props.loginfo?.jwtToken?.access_token
+  useEffect(() => {
+    if (token) {
       props.dispatch({
-        type: 'user/getUserinfo',
+        type: 'user/fetchTags',
       })
     }
-  }, [props.token])
+  }, [token])
 
-  if (!props.token) {
-    return <Login />
+  useEffect(() => {
+    props.dispatch({
+      type: 'user/setData',
+      field: 'loginfo',
+      payload: getLocalInfo(),
+    })
+  }, [])
+
+  if (location.pathname.startsWith('/account')) {
+    return (
+      <div
+        className="layout-account"
+        style={{
+          backgroundImage: `url(${
+            location.pathname.endsWith('favselection') ? blurBg : bg
+          })`,
+        }}
+      >
+        <div className="header-block" style={{ alignItems: 'flex-start' }}>
+          <img src={logoWhite} />
+          {location.pathname.indexOf('login') === -1 ? (
+            <AppUserinfoDropdown />
+          ) : null}
+        </div>
+        {props.children}
+      </div>
+    )
   }
 
+  if (location.pathname.startsWith('/authing')) {
+    return (
+      <div className="layout-authing">
+        <AppHeader />
+        <div className="layout-content">{props.children}</div>
+      </div>
+    )
+  }
+
+  if (location.pathname.startsWith('/media')) {
+    const {
+      query: { id },
+    } = location
+    return (
+      <div className="app-framework">
+        <div className="app-header">
+          <AppHeader>
+            <div className="layout-header-action">
+              <span
+                className="back"
+                onClick={() => props.history.push('/content/news')}
+              />
+              {id ? (
+                <span
+                  className={cx(
+                    'action-link',
+                    location.pathname === '/media-article'
+                      ? 'action-link-active'
+                      : ''
+                  )}
+                >
+                  文章
+                </span>
+              ) : (
+                <NavLink
+                  activeClassName="action-link-active"
+                  className="action-link"
+                  to="/media-article"
+                >
+                  文章
+                </NavLink>
+              )}
+              {id ? (
+                <span
+                  className={cx(
+                    'action-link',
+                    location.pathname === '/media-video'
+                      ? 'action-link-active'
+                      : ''
+                  )}
+                >
+                  视频
+                </span>
+              ) : (
+                <NavLink
+                  activeClassName="action-link-active"
+                  className="action-link"
+                  to="/media-video"
+                >
+                  视频
+                </NavLink>
+              )}
+            </div>
+          </AppHeader>
+        </div>
+        {props.children}
+      </div>
+    )
+  }
+
+  const isHome = props.history.location.pathname === '/'
+  console.log('============', props.children)
   return (
     <ConfigProvider locale={zhCN}>
       <Layout style={{ height: '100%', minWidth: '1024px' }}>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div className={cx('logo')}>
-            <span>hello world</span>
-          </div>
-          <AppMenus />
-        </Sider>
-        <Layout className="site-layout">
-          <Header style={{ padding: 0 }}>
-            <div className={cx('header-container')}>
-              {React.createElement(
-                collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-                {
-                  className: 'trigger',
-                  onClick: () => setCollapsed(prev => !prev),
-                }
-              )}
-              <div className={cx('right')}>
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        onClick={() => {
-                          props.dispatch({
-                            type: 'user/logout',
-                          })
-                          props.history.replace('/')
-                        }}
-                      >
-                        退出
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                  placement="topCenter"
-                  arrow
-                >
-                  <Button type="text">{props.nickname || 'test'}</Button>
-                </Dropdown>
-                <Dropdown
-                  trigger={['click']}
-                  arrow
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        {/* <a href="mailto:support@unionledger.com.cn"> */}
-                        support@test.com
-                        {/* </a> */}
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <CustomerServiceOutlined />
-                </Dropdown>
+        <AppHeader />
+        <Layout>
+          <Sider trigger={null} collapsible collapsed={collapsed}>
+            <AppMenus />
+          </Sider>
+          <Layout>
+            {props.currentPosition && !isHome ? (
+              <div className="breadcrumb-wrapper">
+                <span className="current-position">
+                  {props.currentPosition}
+                </span>
+                <AppBreadcrumb />
               </div>
-            </div>
-          </Header>
-          <AppBreadcrumb />
-          <Content
-            className="site-layout-background"
-            style={{
-              margin: '24px 16px',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-            {props.children}
-          </Content>
+            ) : null}
+            <Content
+              className="main-with-side"
+              style={{ paddingTop: isHome ? 50 : 0 }}
+            >
+              {props.children}
+            </Content>
+          </Layout>
         </Layout>
       </Layout>
     </ConfigProvider>
@@ -110,9 +180,8 @@ const AppLayout = props => {
 }
 
 export default connect(({ user }) => {
-  let token = user?.loginfo?.access_token
-  if (!token) {
-    token = localStorage.getItem('token')
+  return {
+    loginfo: user.loginfo,
+    currentPosition: user.currentPosition,
   }
-  return { token, ...user.userinfo }
 })(AppLayout)

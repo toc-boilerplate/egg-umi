@@ -1,28 +1,25 @@
 import { Breadcrumb } from 'antd'
-import NavLink from 'umi/navlink'
 import { useLocation } from 'react-router-dom'
 import menuConfig from './menuConfig'
+import iconPosition from 'assets/icon_position.svg'
 
-const getBreadcrumbName = key => {
+const getBreadcrumbName = (config, keys, index = 0) => {
+  if (!config) return []
   const target =
-    menuConfig.find(item => new RegExp(`^${item.key}`, 'i').test(key)) || {}
-  const names = []
-  const getNames = menuObj => {
-    Object.keys(menuObj).forEach(() => {
-      names.push(menuObj.title)
-      if (Array.isArray(menuObj.children)) {
-        menuObj.children.forEach(child => getNames(child))
-      }
-    })
+    config.find(item => new RegExp(`^${item.key}`, 'i').test(keys[index])) ?? {}
+  let names = []
+  if (target.title) {
+    names.push(target.title)
   }
-  getNames(target)
+  const nextNames = getBreadcrumbName(target.children, keys, index + 1)
+  names = [...names, nextNames]
   return names
 }
 
 const AppBreadcrumb = () => {
   const location = useLocation()
   const segments = location.pathname.split('/').filter(Boolean)
-  const names = getBreadcrumbName(segments[0])
+  const names = getBreadcrumbName(menuConfig, segments)
 
   const paths = []
   let current = '/'
@@ -37,16 +34,24 @@ const AppBreadcrumb = () => {
   current += segments[i]
 
   return (
-    <Breadcrumb>
-      {paths.map(info => {
-        return (
-          <Breadcrumb.Item key={info.path}>
-            <NavLink to={info.path}>{info.name}</NavLink>
-          </Breadcrumb.Item>
-        )
-      })}
-      <Breadcrumb.Item key={current}>{names[names.length - 1]}</Breadcrumb.Item>
-    </Breadcrumb>
+    <>
+      <span style={{ marginLeft: 'auto' }}>
+        <img src={iconPosition} />
+        当前位置：
+      </span>
+      <Breadcrumb>
+        {paths.map(info => {
+          return (
+            <Breadcrumb.Item key={info.path}>
+              <span to={info.path}>{info.name}</span>
+            </Breadcrumb.Item>
+          )
+        })}
+        <Breadcrumb.Item key={current}>
+          {names[names.length - 1]}
+        </Breadcrumb.Item>
+      </Breadcrumb>
+    </>
   )
 }
 

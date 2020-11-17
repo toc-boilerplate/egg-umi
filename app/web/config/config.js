@@ -1,40 +1,28 @@
-import path from 'path';
-import AntdDayjsWebpackPlugin from 'antd-dayjs-webpack-plugin';
-// import routes from './routes'
+import path from 'path'
+import AntdDayjsWebpackPlugin from 'antd-dayjs-webpack-plugin'
 
-const webRoot = path.resolve(__dirname, '..');
+const webRoot = path.resolve(__dirname, '..')
 
 export default {
-  plugins: [
-    [
-      'umi-plugin-react',
-      {
-        antd: true,
-        dynamicImport: {
-          webpackChunkName: true,
-        },
-        dva: {
-          immer: true,
-        },
-        title: {
-          defaultTitle: 'hello world',
-        },
-      },
-    ],
-  ],
-  runtimePublicPath: true,
-  disableCSSModules: true,
-  cssModulesWithAffix: true,
+  title: 'hello world',
+  dva: {
+    immer: true,
+  },
+  outputPath: '../public/',
+  publicPath: '/public/',
+  manifest: {
+    fileName: '../../config/manifest.json',
+  },
+  hash: true,
   alias: {
     '@': webRoot,
     assets: path.join(webRoot, 'assets'),
+    components: path.join(webRoot, 'components'),
     pages: path.join(webRoot, 'pages'),
     js: path.join(webRoot, 'assets/js'),
+    hooks: path.join(webRoot, 'hooks'),
   },
   chainWebpack(config) {
-    config.plugin('AntdDayjsWebpackPlugin').use(AntdDayjsWebpackPlugin);
-    // config.plugin('Dotenv').use(Dotenv, {
-    //   path: path.resolve(__dirname, '../../../.env'),
-    // })
+    config.plugin('AntdDayjsWebpackPlugin').use(AntdDayjsWebpackPlugin)
   },
-};
+}

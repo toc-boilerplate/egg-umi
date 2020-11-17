@@ -13,15 +13,7 @@ export default {
       },
     },
   },
-  chainWebpack(config) {
-    config.plugin('define').tap(args => {
-      const env = args[0]
-      const newEnv = {
-        ...env['process.env'],
-        axiosBaseURL: JSON.stringify('http://127.0.0.1:8001/api'),
-      }
-
-      return [{ ...env, 'process.env': newEnv }]
-    })
+  define: {
+    'process.env.axiosBaseURL': 'https://api-verify.unionledger.com.cn:8443',
   },
 }
